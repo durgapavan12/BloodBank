@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bloodbankapp.dao.AccountDao;
+import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
 import com.bloodbankapp.pojos.Response;
@@ -20,6 +21,10 @@ public class AccountServices {
 	
 	public Response checkLogin(Login login) {
 		return accountDao.loginCheck(login);
+	}
+
+	public Response insertBloodGroupData(BloodGroup bloodGroup) {
+		return accountDao.insertBGData(bloodGroup);
 	}	
 	
 }

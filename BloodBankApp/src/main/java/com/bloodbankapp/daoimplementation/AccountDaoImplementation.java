@@ -5,7 +5,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
 
 import com.bloodbankapp.constants.DB_Constants;
+import com.bloodbankapp.constants.ResponseConstants;
 import com.bloodbankapp.dao.AccountDao;
+import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
 import com.bloodbankapp.pojos.Response;
@@ -21,13 +23,13 @@ public class AccountDaoImplementation implements AccountDao {
 				.findOne("{phNo:#}", registration.getPhNo()).as(Registration.class);
 
 		if (registeredUser != null) {
-			response.setStatusCode(600);
+			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("User already Exist");
 		}
 		else {
 			
 			new Jongo(DB_Constants.getMongodbDatabase()).getCollection("registration").insert(registration);
-			response.setStatusCode(200);
+			response.setStatusCode(ResponseConstants.Success_code);
 			response.setStatusMessage("New User Created!");
 		}
 		return response;
@@ -43,17 +45,48 @@ public class AccountDaoImplementation implements AccountDao {
 		String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));			
 		boolean b=BCrypt.checkpw(user.getPassword(),generatedlogedPasswordHash );
 		if (b) {
-			response.setStatusCode(200);
+			response.setStatusCode(ResponseConstants.Success_code);
 			response.setStatusMessage("Successfully logged in!");
 		} else {
-			response.setStatusCode(600);
+			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("Error while logging ");
 		}
 		}
 		else {
-			response.setStatusCode(600);
+			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("User Not found");
 		}		
+		return response;
+	}
+
+	@Override
+	public Response insertBGData(BloodGroup bloodGroup) {
+
+		Response response=new Response();
+		try {
+			BloodGroup bg=new Jongo(DB_Constants.getMongodbDatabase()).getCollection("bloodGroups").findOne("{bloodGroup:#}",bloodGroup.getBloodGroup()).as(BloodGroup.class);
+			
+			if (bg!=null) {			
+			int n=bg.getQuantity()+bloodGroup.getQuantity();
+			System.out.println(n);
+			bg.setQuantity(n);
+			System.out.println("amount="+bg.getAmount());
+			new Jongo(DB_Constants.getMongodbDatabase()).getCollection("bloodGroups").update("{bloodGroup:#}",bloodGroup.getBloodGroup())
+			.upsert().with(bg);
+			response.setStatusCode(ResponseConstants.Success_code);
+			response.setStatusMessage("Successfully blood group qty inserted");
+			}
+			else {
+			new Jongo(DB_Constants.getMongodbDatabase()).getCollection("bloodGroup").insert(bloodGroup);
+			response.setStatusCode(ResponseConstants.Success_code);
+			response.setStatusMessage("Successfully inserted new bloodgroup");
+			}
+		
+		}catch (Exception e) {
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("Error while inserting bloodgroup details");
+		}
+		
 		return response;
 	}
 

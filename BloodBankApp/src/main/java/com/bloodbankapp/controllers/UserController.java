@@ -21,7 +21,6 @@ public class UserController {
 	@RequestMapping(value = "/register", method = RequestMethod.POST, headers = "Accept=application/json")
 	public Response registrationNewUser(@RequestBody Registration registration) {
 		Response response = new Response();
-		System.out.println("Welcome To Bload Bank");
 		try {
 			response = accountService.registrationUser(registration);
 		} catch (Exception e) {
@@ -34,16 +33,13 @@ public class UserController {
 	@RequestMapping(value="/login",method = RequestMethod.POST,headers = "Accept=application/json")
 	public Response login(@RequestBody Login login) {
 	Response response=new Response();
-	
-	System.out.println("In login Controller");
-	
 	try{
 		response=accountService.checkLogin(login);
-	}catch (Exception e) {
+	} catch (Exception e) {
 		response.setStatusCode(600);
 		response.setStatusMessage("Error in logging");
 	}
 		return response;
 	}
-
+	
 }
