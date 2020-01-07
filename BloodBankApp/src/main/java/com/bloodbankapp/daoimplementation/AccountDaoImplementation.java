@@ -1,5 +1,10 @@
 package com.bloodbankapp.daoimplementation;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.jongo.Find;
 import org.jongo.Jongo;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Repository;
@@ -11,6 +16,7 @@ import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
 import com.bloodbankapp.pojos.Response;
+import com.bloodbankapp.pojos.Transaction;
 
 @Repository("accountDao")
 public class AccountDaoImplementation implements AccountDao {
@@ -90,4 +96,51 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	@Override
+	public Response insertTransaction(Transaction transaction) {
+		// TODO Auto-generated method stub
+		Response response=new Response();
+		try {
+		new Jongo(DB_Constants.getMongodbDatabase()).getCollection("transaction").insert(transaction); 
+		  response.setStatusCode(ResponseConstants.Success_code);
+		  response.setStatusMessage("Amount transfered!");
+		}
+		
+		catch (Exception e) {
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("Error while inserting amount");
+		}
+		
+		
+		
+		
+	return response;
+		
+	
+	}
+
+	@Override
+	public List<Transaction> fetchTransaction() {
+		// TODO Auto-generated method stub
+	
+		List<Transaction> list=new ArrayList<>();
+	
+		
+		Iterator iterator=new Jongo(DB_Constants.getMongodbDatabase()).getCollection("transaction").find().as(Transaction.class).iterator();
+		while(iterator.hasNext()) {
+		list.add((Transaction) iterator.next());
+		}
+		
+		
+		return list;
+
+	}
+
 }
+
+	
+
+
+	
+
+

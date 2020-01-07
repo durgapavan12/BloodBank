@@ -1,5 +1,7 @@
 package com.bloodbankapp.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bloodbankapp.constants.ResponseConstants;
 import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Response;
+import com.bloodbankapp.pojos.Transaction;
 import com.bloodbankapp.services.AccountServices;
 
 @RestController
@@ -30,4 +33,29 @@ public class AdminController {
 		}
 		return response;		
 	}
+	
+	@RequestMapping(value = "/transfer",method = RequestMethod.POST,headers = "Accept=application/json")
+	public Response insertTransaction(@RequestBody Transaction transaction)
+	{
+		Response response=new Response();
+		try {
+			response=accountService.insertTransaction(transaction);
+		}catch (Exception e) {
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("Error in inserting amount");
+		}
+		return response;		
+	}
+	
+	@RequestMapping(value = "/view",method = RequestMethod.POST,headers = "Accept=application/json")
+	public List<Transaction> fetchTransaction()
+	{
+		List<Transaction> list=null;
+	
+	
+	 list=accountService.fetchTransaction();
+		
+		return list;		
+	}
+	
 }
