@@ -1,5 +1,6 @@
 package com.bloodbankapp.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class AccountServices {
 	AccountDao accountDao;
 
 	public Response registrationUser(Registration registration) {
+		System.out.println("in service");
 		return accountDao.registration(registration);
 	}
 	
@@ -38,4 +40,20 @@ public class AccountServices {
 		return accountDao.fetchTransaction();
 	}	
 	
+
+	public Response checkBloodDetails(BloodGroup bloodGroup) {
+		return accountDao.bloodChecking(bloodGroup);
+	}
+
+	public ArrayList<BloodGroup> fetchBloodDetails() {
+		return accountDao.bloodAvailableDetails();
+	}
+
+	public Registration getProfile(long id) {
+		return accountDao.viewProfile(id);
+	}
+
+	public Response removeUser(long phNo) {
+		return accountDao.deleteUser(phNo);
+	}
 }

@@ -1,5 +1,6 @@
 package com.bloodbankapp.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,16 @@ public class AdminController {
 		return response;		
 	}
 	
+	
+	@RequestMapping(value = "/fetch",method = RequestMethod.POST,headers = "Accept=application/json")
+	public ArrayList<BloodGroup> fetchAvailbleBloodDetails()
+	{
+		ArrayList<BloodGroup> list= new ArrayList<BloodGroup>();
+		list=accountService.fetchBloodDetails();		
+		return list;
+	}
+	
+	
 	@RequestMapping(value = "/transfer",method = RequestMethod.POST,headers = "Accept=application/json")
 	public Response insertTransaction(@RequestBody Transaction transaction)
 	{
@@ -47,15 +58,28 @@ public class AdminController {
 		return response;		
 	}
 	
-	@RequestMapping(value = "/view",method = RequestMethod.POST,headers = "Accept=application/json")
+	@RequestMapping(value = "/view",method = RequestMethod.POST)
 	public List<Transaction> fetchTransaction()
 	{
 		List<Transaction> list=null;
-	
-	
-	 list=accountService.fetchTransaction();
+		list=accountService.fetchTransaction();
 		
 		return list;		
+	}
+	
+	
+	@RequestMapping(value="/delete")
+	public Response deleteUser(long phNo)
+	{
+		Response response= new Response();
+		try {
+			response=accountService.removeUser(phNo);
+			}catch (Exception e) {
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("Error in deleting user");
+		}
+		return response;	
+		
 	}
 	
 }

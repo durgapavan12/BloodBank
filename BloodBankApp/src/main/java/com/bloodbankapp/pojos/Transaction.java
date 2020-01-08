@@ -1,11 +1,24 @@
 package com.bloodbankapp.pojos;
 
 public class Transaction {
-	
+	private int t_id;
+	public int getT_id() {
+		return t_id;
+	}
+	public void setT_id(int t_id) {
+		this.t_id = t_id;
+	}
 	private String name;
 	private String bloodGroup;
 	private int quantity;
 	private double amount;
+	private long phNo;
+	public long getPhNo() {
+		return phNo;
+	}
+	public void setPhNo(long phNo) {
+		this.phNo = phNo;
+	}
 	public String getName() {
 		return name;
 	}

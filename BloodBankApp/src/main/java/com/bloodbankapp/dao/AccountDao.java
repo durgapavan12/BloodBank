@@ -2,6 +2,8 @@ package com.bloodbankapp.dao;
 
 import java.util.List;
 
+import java.util.ArrayList;
+
 import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
@@ -15,4 +17,8 @@ public interface AccountDao {
 	Response insertBGData(BloodGroup bloodGroup);
 	Response insertTransaction(Transaction transaction);
 	List<Transaction> fetchTransaction();
+	Response bloodChecking(BloodGroup bloodGroup);
+	ArrayList<BloodGroup> bloodAvailableDetails();
+	Registration viewProfile(long phNo);
+	Response deleteUser(long phNo);
 }

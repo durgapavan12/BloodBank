@@ -1,19 +1,19 @@
 package com.bloodbankapp.pojos;
 
 public class Registration {
-	//private long id;
+	private long id;
 	private String name;
 	private long phNo;
 	private String password;
 	private int age;
 	private String gender;
 	private String bloodGroup;
-//	public long getId() {
-//		return id;
-//	}
-//	public void setId(long id) {
-//		this.id = id;
-//	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public String getName() {
 		return name;
 	}
