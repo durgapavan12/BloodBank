@@ -226,18 +226,6 @@ public class AccountDaoImplementation implements AccountDao {
 	}
 	
 	
-	/*
-	 * BloodGroup bg=new
-	 * Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.
-	 * getBloodgroupCol()).findOne("{bloodGroup:#}",transaction.getBloodGroup()).as(
-	 * BloodGroup.class);
-	 * 
-	 * if(bg!=null) { int n=bg.getQuantity()+transaction.getQuantity();
-	 * bg.setQuantity(n); new
-	 * Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.
-	 * getBloodgroupCol()).update("{bloodGroup:#}",transaction.getBloodGroup()).
-	 * upsert().with(bg);
-	 */
 	
 	
 }
