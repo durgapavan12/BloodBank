@@ -21,4 +21,8 @@ public interface AccountDao {
 	ArrayList<BloodGroup> bloodAvailableDetails();
 	Registration viewProfile(long phNo);
 	Response deleteUser(long phNo);
+	Response changePassword(String password, String pastPassword,long id);
+	
+	 
+
 }

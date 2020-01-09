@@ -56,4 +56,11 @@ public class AccountServices {
 	public Response removeUser(long phNo) {
 		return accountDao.deleteUser(phNo);
 	}
+
+	public Response changePassword(String password, String pastPassword,long id) {
+		return accountDao.changePassword(password,pastPassword,id);
+	}
+	
+	
+
 }

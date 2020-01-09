@@ -203,6 +203,43 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	@Override
+	public Response changePassword(String password,String pastPassword,long id) {
+		// TODO Auto-generated method stub#
+		Response response=new Response();
+		Registration dbprofile=new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol()).findOne("{id:#}",id).as(Registration.class);
+		if(password.equals(dbprofile.getPassword())){
+			dbprofile.setPassword(password);
+			new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol()).update("{id:#}",id).upsert().with(dbprofile);
+			response.setStatusCode(ResponseConstants.Success_code);
+			response.setStatusMessage("password updated successfully");
+		}
+		else
+		{
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("failed to update password");
+		}
+		
+		
+		
+		return response;
+	}
+	
+	
+	/*
+	 * BloodGroup bg=new
+	 * Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.
+	 * getBloodgroupCol()).findOne("{bloodGroup:#}",transaction.getBloodGroup()).as(
+	 * BloodGroup.class);
+	 * 
+	 * if(bg!=null) { int n=bg.getQuantity()+transaction.getQuantity();
+	 * bg.setQuantity(n); new
+	 * Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.
+	 * getBloodgroupCol()).update("{bloodGroup:#}",transaction.getBloodGroup()).
+	 * upsert().with(bg);
+	 */
+	
+	
 }
 
 	

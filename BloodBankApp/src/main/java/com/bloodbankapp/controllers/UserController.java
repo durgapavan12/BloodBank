@@ -3,6 +3,7 @@ package com.bloodbankapp.controllers;
 import javax.imageio.spi.RegisterableService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -86,6 +87,24 @@ public class UserController {
 		
 		return profile;
 	}
+	
+	@RequestMapping(value="/changePassword",method = RequestMethod.POST)
+	public Response changePassword(@PathVariable String password,@PathVariable String pastPassword,@PathVariable long id) {
+		Response response=new Response();
+		try {
+		response=accountService.changePassword(password,pastPassword,id);
+		}catch (Exception e) {
+			// TODO: handle exception
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.equals("error while changing password");
+			
+		}
+		
+		return response;
+		
+	
+	}
+
 	
 	
 	
