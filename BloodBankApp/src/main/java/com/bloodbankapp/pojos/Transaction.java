@@ -2,17 +2,18 @@ package com.bloodbankapp.pojos;
 
 public class Transaction {
 	private int t_id;
-	public int getT_id() {
-		return t_id;
-	}
-	public void setT_id(int t_id) {
-		this.t_id = t_id;
-	}
 	private String name;
 	private String bloodGroup;
 	private int quantity;
 	private double amount;
 	private long phNo;
+	private String status;
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public long getPhNo() {
 		return phNo;
 	}
@@ -43,5 +44,10 @@ public class Transaction {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
-
+	public int getT_id() {
+		return t_id;
+	}
+	public void setT_id(int t_id) {
+		this.t_id = t_id;
+	}
 }

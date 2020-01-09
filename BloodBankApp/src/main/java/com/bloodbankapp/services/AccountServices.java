@@ -49,11 +49,30 @@ public class AccountServices {
 		return accountDao.bloodAvailableDetails();
 	}
 
-	public Registration getProfile(long id) {
-		return accountDao.viewProfile(id);
+	public Registration getProfile(long phNo){
+		return accountDao.viewProfile(phNo);
 	}
 
 	public Response removeUser(long phNo) {
 		return accountDao.deleteUser(phNo);
 	}
+
+	public ArrayList<Transaction> getTransactions(long phNo) {
+		return accountDao.transactionList(phNo);
+	}
+
+	public Response updateQuantity(Transaction transaction) {
+		return accountDao.updateQuantity(transaction);
+	}
+
+	public Response editProfile(Registration updation,long id) {
+		return accountDao.profileEdit(updation,id);
+	}
+	
+	public Response changePassword(String password, String pastPassword,long id) {
+		return accountDao.changePassword(password,pastPassword,id);
+		}
+
+	
+	
 }

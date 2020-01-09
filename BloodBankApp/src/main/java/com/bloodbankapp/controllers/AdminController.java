@@ -45,18 +45,18 @@ public class AdminController {
 	}
 	
 	
-	@RequestMapping(value = "/transfer",method = RequestMethod.POST,headers = "Accept=application/json")
-	public Response insertTransaction(@RequestBody Transaction transaction)
-	{
-		Response response=new Response();
-		try {
-			response=accountService.insertTransaction(transaction);
-		}catch (Exception e) {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Error in inserting amount");
-		}
-		return response;		
-	}
+//	@RequestMapping(value = "/transfer",method = RequestMethod.POST,headers = "Accept=application/json")
+//	public Response insertTransaction(@RequestBody Transaction transaction)
+//	{
+//		Response response=new Response();
+//		try {
+//			response=accountService.insertTransaction(transaction);
+//		}catch (Exception e) {
+//			response.setStatusCode(ResponseConstants.Error_code);
+//			response.setStatusMessage("Error in inserting amount");
+//		}
+//		return response;		
+//	}
 	
 	@RequestMapping(value = "/view",method = RequestMethod.POST)
 	public List<Transaction> fetchTransaction()
@@ -82,4 +82,20 @@ public class AdminController {
 		
 	}
 	
-}
+	@RequestMapping(value = "/update",method = RequestMethod.POST ,headers = "Accept=application/json")
+	public Response updateQuantity(@RequestBody Transaction transaction)
+	{
+		Response response= new Response();
+		try {
+			response=accountService.updateQuantity(transaction);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return response;		
+	}
+	
+	
+		
+	}

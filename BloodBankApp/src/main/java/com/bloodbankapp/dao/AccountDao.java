@@ -21,4 +21,8 @@ public interface AccountDao {
 	ArrayList<BloodGroup> bloodAvailableDetails();
 	Registration viewProfile(long phNo);
 	Response deleteUser(long phNo);
+	ArrayList<Transaction> transactionList(long phNo);
+	Response updateQuantity(Transaction transaction);
+	Response profileEdit(Registration registration,long id);
+	Response changePassword(String password, String pastPassword, long id);
 }
