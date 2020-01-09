@@ -3,7 +3,6 @@ package com.bloodbankapp.controllers;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,33 +25,29 @@ public class UserController {
 	AccountServices accountService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response registrationNewUser(@RequestBody Registration registration) {
+	public Response registrationNewUser(@RequestBody Registration registration) throws BloodBankException {
 		Response response = new Response();
 		try {
-			System.out.println("In register");
 			response = accountService.registrationUser(registration);
-			System.out.println("end register");
 		} catch (Exception e) {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Error in registration");
+			throw new BloodBankException("Exception occured while Registration failed!");
 		}
 		return response;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response login(@RequestBody Login login) {
+	public Response login(@RequestBody Login login) throws BloodBankException {
 		Response response = new Response();
 		try {
 			response = accountService.checkLogin(login);
 		} catch (Exception e) {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Error in checking blood ");
+			throw new BloodBankException("Exception occured in checking blood ");
 		}
 		return response;
 	}
 
 	@RequestMapping(value = "/check", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response bloodCheck(@RequestBody BloodGroup bloodGroup) {
+	public Response bloodCheck(@RequestBody BloodGroup bloodGroup) throws BloodBankException {
 		Response response = new Response();
 		try {
 			if (bloodGroup.getQuantity() <= 0) {
@@ -62,8 +57,7 @@ public class UserController {
 			}
 			response = accountService.checkBloodDetails(bloodGroup);
 		} catch (Exception e) {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Error while checking blood details");
+			throw new BloodBankException("Exception occured while checking blood details");
 		}
 		return response;
 	}
@@ -74,30 +68,29 @@ public class UserController {
 		try {
 			profile = accountService.getProfile(phNo);
 		} catch (Exception e) {
-			new BloodBankException("Error while fetching profile");
+			new BloodBankException("Exception occured while fetching profile");
 		}
 		return profile;
 	}
 
 	@RequestMapping(value = "/transactions", method = RequestMethod.POST)
-	public ArrayList<Transaction> viewTransactions(long phNo) {
+	public ArrayList<Transaction> viewTransactions(long phNo) throws BloodBankException {
 		ArrayList<Transaction> list = new ArrayList<Transaction>();
 		try {
 			list = accountService.getTransactions(phNo);
 		} catch (Exception e) {
-			new BloodBankException("Error while fetching user transactions");
+			throw new BloodBankException("Exception occured while fetching user transactions");
 		}
 		return list;
 	}
 
 	@RequestMapping(value="/change",method = RequestMethod.POST)
-	public Response changePassword(String password,String oldPassword,long id) {
+	public Response changePassword(String password,String oldPassword,long id) throws BloodBankException {
 	Response response=new Response();
 	try {
 	response=accountService.changePassword(password,oldPassword,id);
 	}catch (Exception e) {
-	response.setStatusCode(ResponseConstants.Error_code);
-	response.setStatusMessage("error while changing password");
+		throw new BloodBankException("Exception occured while changing password");
 	}
 	return response;
 	}
@@ -109,12 +102,9 @@ public class UserController {
 			response = accountService.editProfile(updation, id);
 
 		} catch (Exception e) {
-			new BloodBankException("Error while editing profile");
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Failed to edit");
+			new BloodBankException("Exception occured while editing profile");
 		}
 		return response;
-
 	}
 
 }
