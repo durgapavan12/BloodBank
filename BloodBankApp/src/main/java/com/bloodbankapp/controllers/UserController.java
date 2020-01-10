@@ -22,7 +22,7 @@ import com.bloodbankapp.services.AccountServices;
 public class UserController {
 
 	@Autowired
-	AccountServices accountService;
+	private AccountServices accountService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, headers = "Accept=application/json")
 	public Response registrationNewUser(@RequestBody Registration registration) throws BloodBankException {
@@ -37,7 +37,7 @@ public class UserController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")
 	public Response login(@RequestBody Login login) throws BloodBankException {
-		Response response = new Response();
+		Registration response = new Registration();
 		try {
 			response = accountService.checkLogin(login);
 		} catch (Exception e) {

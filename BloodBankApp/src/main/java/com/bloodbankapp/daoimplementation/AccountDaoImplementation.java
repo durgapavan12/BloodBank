@@ -12,12 +12,15 @@ import org.springframework.stereotype.Repository;
 import com.bloodbankapp.constants.DB_Constants;
 import com.bloodbankapp.constants.ResponseConstants;
 import com.bloodbankapp.dao.AccountDao;
+import com.bloodbankapp.exception.BloodBankException;
 import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Counter;
 import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
 import com.bloodbankapp.pojos.Response;
+import com.bloodbankapp.pojos.Role;
 import com.bloodbankapp.pojos.Transaction;
+import com.bloodbankapp.pojos.UserPermissions;
 
 import ch.qos.logback.classic.Logger;
 
@@ -52,7 +55,7 @@ public class AccountDaoImplementation implements AccountDao {
 	}
 
 	@Override
-	public Response loginCheck(Login login) {
+	public Registration loginCheck(Login login) {
 
 		Response response = new Response();
 		Registration user = new Jongo(DB_Constants.getMongodbDatabase())
@@ -72,7 +75,7 @@ public class AccountDaoImplementation implements AccountDao {
 			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("User Not found");
 		}
-		return response;
+		return user;
 	}
 
 	@Override
@@ -311,5 +314,69 @@ public class AccountDaoImplementation implements AccountDao {
 		}
 				return response;
 	}
+
+	@Override
+	 public List<Role> getAllRoles() throws BloodBankException  {
+		Iterator<Role> itr = null;
+		List<Role> listOfRoles = new ArrayList<Role>();
+		try {
+		itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles").aggregate("{$match:{}}").as(Role.class)        //"rolesDetails"
+		.iterator();
+		while (itr.hasNext()) {
+		Role role = new Role();
+		role=itr.next();
+		listOfRoles.add(role);
+
+		}
+		} catch (Exception e) {
+		throw new BloodBankException("Exception Occure Wille Feacthing The All Roles ", e);
+		}
+		return listOfRoles;
+		}
+
+	@Override
+	public UserPermissions getAdminAndUserRoles(int i) throws BloodBankException {
+
+		Iterator<UserPermissions> itr = null;
+		UserPermissions userPermissions = new UserPermissions();
+		try {
+		itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles").aggregate("{$match:{roleId:#}}", i)
+		.and("{$group:{_id:null,permissionList: { $first: '$permissions'},roleIdList: { $push: '$roleId' }}}")
+		.as(UserPermissions.class).iterator();
+		if (itr.hasNext()) {
+		userPermissions = itr.next();
+		}
+		} catch (Exception e) {
+		throw new BloodBankException("Exception Occure Wille Fetching The All Roles",e);
+		}
+		return userPermissions;
+	}
+
+	@Override
+	public Login checkAdmin(Login login) {
+		Response response = new Response();
+		Login user = new Jongo(DB_Constants.getMongodbDatabase())
+				.getCollection(DB_Constants.getAdminCol()).findOne("{userPhno:#}", login.getPhNo())
+				.as(Login.class);
+		if (user != null) {
+			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
+			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
+			if (b) {
+				response.setStatusCode(ResponseConstants.Success_code);
+				response.setStatusMessage("Successfully logged in!");
+			} else {
+				response.setStatusCode(ResponseConstants.Error_code);
+				response.setStatusMessage("Error while logging ");
+			}
+		} else {
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("User Not found");
+		}
+		return user;
+
+	
+	}
+	
+	
 
 }

@@ -1,6 +1,6 @@
 package com.bloodbankapp.pojos;
 
-public class Registration {
+public class Registration extends Response{
 	private long id;
 	private String name;
 	private long phNo;

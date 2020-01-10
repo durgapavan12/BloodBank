@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bloodbankapp.exception.BloodBankException;
 import com.bloodbankapp.pojos.BloodGroup;
+import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Response;
 import com.bloodbankapp.pojos.Transaction;
 import com.bloodbankapp.services.AccountServices;
@@ -20,7 +21,18 @@ import com.bloodbankapp.services.AccountServices;
 public class AdminController {
 
 	@Autowired
-	AccountServices accountService;	
+	 AccountServices accountService;	
+	
+	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")
+	public Response login(@RequestBody Login login) throws BloodBankException {
+		Response response = new Login();
+		try {
+			response = accountService.checkAdminLogin(login);
+		} catch (Exception e) {
+			throw new BloodBankException("Exception occured in checking blood ");
+		}
+		return response;
+	}
 	
 	@RequestMapping(value = "/insert",method = RequestMethod.POST,headers = "Accept=application/json")
 	public Response insertBloodData(@RequestBody BloodGroup bloodGroup) throws BloodBankException
