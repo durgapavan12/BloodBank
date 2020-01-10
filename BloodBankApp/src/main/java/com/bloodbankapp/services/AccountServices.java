@@ -32,18 +32,49 @@ public class AccountServices {
 	private JwtValidator jwtvalidator;
 
 	public Response registrationUser(Registration registration) {
-		System.out.println("in service");
 		return accountDao.registration(registration);
 	}
 
-	public Registration checkLogin(Login login) throws BloodBankException {
-
-		Registration user = accountDao.loginCheck(login);
+	public Response checkLogin(Login login) throws BloodBankException {
+		
+//		Registration user = accountDao.loginCheck(login);
+//		if (user != null) {
+//			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
+//		}
+//		return user;
+		Response resp=new Response();
+		Login user = accountDao.checkAdmin(login);
 		if (user != null) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
-		}
-		return user;
+			Set<String> permissionSet=new HashSet<String>();
+			for(Permission permission:userPermissions.getPermissionList()) {
+			permissionSet.add(permission.getPermisssionName());
+			}
+			JwtUser jwtUser = new JwtUser();
+			jwtUser.setUserPhno(user.getPhNo());
+			jwtUser.setUserId(user.getUserId());
+			jwtUser.setUserType(JwtUser.USER);
+			jwtUser.setRoles(101 + "");
+
+			String sessionToken = jwtvalidator.generate(jwtUser);
+			System.out.println("JWt Token :: " + sessionToken);
+			user.setSessionToken(sessionToken);
+			user.setStatusCode(ResponseConstants.Success_code);
+			user.setStatusMessage("successfully login");
+			return user;
+			}
+		else {
+			resp.setStatusCode(ResponseConstants.Error_code);
+			resp.setStatusMessage("login failed");
+			return resp;
+			}
+
+
+		
+	
 	}
+		
+	
 
 	public Response insertBloodGroupData(BloodGroup bloodGroup) {
 		return accountDao.insertBGData(bloodGroup);

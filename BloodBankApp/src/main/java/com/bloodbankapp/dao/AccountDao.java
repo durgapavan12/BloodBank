@@ -16,7 +16,7 @@ import com.bloodbankapp.pojos.UserPermissions;
 public interface AccountDao {
 
 	Response registration(Registration registration);
-	Registration loginCheck(Login login);
+	Login loginCheck(Login login);
 	Response insertBGData(BloodGroup bloodGroup);
 	Response insertTransaction(Transaction transaction);
 	List<Transaction> fetchTransaction();

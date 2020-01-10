@@ -7,14 +7,9 @@ public class SecurityConstants {
 
 	public static final String[] IGNORE_RESOURCE_PATHS = {};
 
-	public static final String[] IGNORE_AUTHENTICATION_PATHS = { "/account/**", "/userprofile/**", "/healthsocial/**",
-			"/phr/**", "/dashboard/**", "/phr/report/**", "/hspackage/**", "/advice/**", "/immunizationadvice/**",
-			"/symptomadvice/**", "/dietadvice/**", "/physicaladvice/**", "/fitnessdevice/**", "/mCommerce/**",
-			"/calendar/**", "/fthvital/**", "/medicaladvice/**", "/phr/vital/**", "/notification/*", "/dialogflow/**",
-			"/doctor/report/**", "/diabetic/**", "/healthtips/**", "/campaign/**", "/migration/**", "/quitalcohol/**",
-			"/account/onboarding/**" };
+	public static final String[] IGNORE_AUTHENTICATION_PATHS = {  };
 
-	public static final String[] AUTHENTICATION_PATHS = { "/account/secure/*","/admin/*"};
+	public static final String[] AUTHENTICATION_PATHS = { "/admin/*"};
 
 	public static final Map<Long, String> ROLE_MAPPER = new HashMap<>();
 

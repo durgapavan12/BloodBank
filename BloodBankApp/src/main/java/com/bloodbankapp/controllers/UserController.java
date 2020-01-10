@@ -37,7 +37,7 @@ public class UserController {
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")
 	public Response login(@RequestBody Login login) throws BloodBankException {
-		Registration response = new Registration();
+		Response response = new Login();
 		try {
 			response = accountService.checkLogin(login);
 		} catch (Exception e) {

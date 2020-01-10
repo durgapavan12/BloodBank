@@ -55,12 +55,12 @@ public class AccountDaoImplementation implements AccountDao {
 	}
 
 	@Override
-	public Registration loginCheck(Login login) {
+	public Login loginCheck(Login login) {
 
 		Response response = new Response();
-		Registration user = new Jongo(DB_Constants.getMongodbDatabase())
+		Login user = new Jongo(DB_Constants.getMongodbDatabase())
 				.getCollection(DB_Constants.getRegistrationCol()).findOne("{phNo:#}", login.getPhNo())
-				.as(Registration.class);
+				.as(Login.class);
 		if (user != null) {
 			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
 			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
