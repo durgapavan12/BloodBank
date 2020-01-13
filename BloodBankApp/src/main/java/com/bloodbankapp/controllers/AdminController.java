@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -35,6 +37,8 @@ public class AdminController {
 		return response;
 	}
 	
+	
+
 	@RequestMapping(value = "/insert",method = RequestMethod.POST,headers = "Accept=application/json")
 	public Response insertBloodData(@RequestBody BloodGroup bloodGroup) throws BloodBankException
 	{
@@ -75,7 +79,9 @@ public class AdminController {
 //		return response;		
 //	}
 	
-	@RequestMapping(value = "/view",method = RequestMethod.POST)
+	
+	@PreAuthorize("hasPermission('null','viewTransactions')")
+	@RequestMapping(value = "/secure/view",method = RequestMethod.POST)
 	public List<Transaction> fetchTransaction() throws BloodBankException
 	{	try {
 		List<Transaction> list=null;
@@ -89,8 +95,8 @@ public class AdminController {
 		
 	}
 	
-	
-	@RequestMapping(value="/delete")
+	@PreAuthorize("hasPermission('null','deleteUser')")
+	@DeleteMapping(value="/secure/delete")
 	public Response deleteUser(long phNo) throws BloodBankException
 	{
 		Response response= new Response();
@@ -103,7 +109,9 @@ public class AdminController {
 		
 	}
 	
-	@RequestMapping(value = "/update",method = RequestMethod.POST ,headers = "Accept=application/json")
+	
+	@PreAuthorize("hasPermission('null','updateBlood')")
+	@RequestMapping(value = "/secure/update",method = RequestMethod.POST ,headers = "Accept=application/json")
 	public Response updateQuantity(@RequestBody Transaction transaction) throws BloodBankException
 	{
 		Response response= new Response();

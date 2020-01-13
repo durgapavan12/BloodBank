@@ -3,6 +3,7 @@ package com.bloodbankapp.controllers;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -62,7 +63,9 @@ public class UserController {
 		return response;
 	}
 
-	@RequestMapping(value = "/profile", method = RequestMethod.POST)
+
+	@PreAuthorize("hasPermission('null','viewUser')")
+	@RequestMapping(value = "/secure/profile", method = RequestMethod.GET)
 	public Registration viewProfile(long phNo) {
 		Registration profile = new Registration();
 		try {
@@ -73,7 +76,9 @@ public class UserController {
 		return profile;
 	}
 
-	@RequestMapping(value = "/transactions", method = RequestMethod.POST)
+	
+	@PreAuthorize("hasPermission('null','viewUserTransaction')")
+	@RequestMapping(value = "/secure/transactions", method = RequestMethod.POST)
 	public ArrayList<Transaction> viewTransactions(long phNo) throws BloodBankException {
 		ArrayList<Transaction> list = new ArrayList<Transaction>();
 		try {
@@ -84,7 +89,8 @@ public class UserController {
 		return list;
 	}
 
-	@RequestMapping(value="/change",method = RequestMethod.POST)
+	@PreAuthorize("hasPermission('null','updateProfile')")
+	@RequestMapping(value="/secure/change",method = RequestMethod.POST)
 	public Response changePassword(String password,String oldPassword,long id) throws BloodBankException {
 	Response response=new Response();
 	try {

@@ -7,9 +7,9 @@ public class SecurityConstants {
 
 	public static final String[] IGNORE_RESOURCE_PATHS = {};
 
-	public static final String[] IGNORE_AUTHENTICATION_PATHS = {"/account/login/*"};
+	public static final String[] IGNORE_AUTHENTICATION_PATHS = { "/account/**", "/admin/**" };
 
-	public static final String[] AUTHENTICATION_PATHS = { "/admin/*"};
+	public static final String[] AUTHENTICATION_PATHS = { "/admin/secure/**", "/account/secure/**" };
 
 	public static final Map<Long, String> ROLE_MAPPER = new HashMap<>();
 

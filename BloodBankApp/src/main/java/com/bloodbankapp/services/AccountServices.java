@@ -36,14 +36,9 @@ public class AccountServices {
 	}
 
 	public Response checkLogin(Login login) throws BloodBankException {
-		
-//		Registration user = accountDao.loginCheck(login);
-//		if (user != null) {
-//			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
-//		}
-//		return user;
+
 		Response resp=new Response();
-		Login user = accountDao.checkAdmin(login);
+		Login user = accountDao.loginCheck(login);
 		if (user != null) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
 			Set<String> permissionSet=new HashSet<String>();
@@ -72,7 +67,6 @@ public class AccountServices {
 	}
 		
 	
-
 	public Response insertBloodGroupData(BloodGroup bloodGroup) {
 		return accountDao.insertBGData(bloodGroup);
 	}
