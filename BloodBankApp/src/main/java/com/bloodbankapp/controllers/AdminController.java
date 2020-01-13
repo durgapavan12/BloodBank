@@ -83,7 +83,7 @@ public class AdminController {
 		return list;
 	}
 	catch (Exception e) {
-		throw new BloodBankException("Exception occured while fetching all transactions failed!");
+		throw new BloodBankException("Exception occured while fetching all transactions");
 		
 	}
 		
@@ -111,7 +111,7 @@ public class AdminController {
 			response=accountService.updateQuantity(transaction);
 			
 		}catch (Exception e) {
-			throw new BloodBankException("Exception occured while updation of blood quantity and transaction");
+			throw new BloodBankException("Exception occured while updating of blood quantity and transaction");
 		}
 		
 		return response;		

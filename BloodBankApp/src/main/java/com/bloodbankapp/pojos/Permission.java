@@ -3,6 +3,7 @@ package com.bloodbankapp.pojos;
 public class Permission {
 	private int permissionId;
 	private String permisssionName;
+	
 	public int getPermissionId() {
 		return permissionId;
 	}

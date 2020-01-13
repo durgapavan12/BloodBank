@@ -30,7 +30,7 @@ public class UserController {
 		try {
 			response = accountService.registrationUser(registration);
 		} catch (Exception e) {
-			throw new BloodBankException("Exception occured while Registration failed!");
+			throw new BloodBankException("Exception occured while Registration");
 		}
 		return response;
 	}

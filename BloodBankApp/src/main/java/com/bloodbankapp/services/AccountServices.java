@@ -69,9 +69,6 @@ public class AccountServices {
 			return resp;
 			}
 
-
-		
-	
 	}
 		
 	
