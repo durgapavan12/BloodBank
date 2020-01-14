@@ -22,7 +22,7 @@ import com.bloodbankapp.services.AccountServices;
 
 @Component
 public class CustomPermissionHandler implements PermissionEvaluator {
-	
+
 	@Autowired
 	private AccountServices accountService;
 	private static Map<Integer, ArrayList<String>> permissionMap = null;
@@ -105,10 +105,10 @@ public class CustomPermissionHandler implements PermissionEvaluator {
 					for (int i = 0; i < roleList.size(); i++) {
 						ArrayList<String> accessList = new ArrayList<>();
 						Role role = roleList.get(i);
-						for (int j = 0; j < role.getPermission().size(); j++) {
-							
-								accessList.add(role.getPermission().get(j).getPermisssionName());
-					
+						for (int j = 0; j < role.getPermissions().size(); j++) {
+
+							accessList.add(role.getPermissions().get(j).getPermissionName());
+
 						}
 						permissionMap.put(role.getRoleId(), accessList);
 					}

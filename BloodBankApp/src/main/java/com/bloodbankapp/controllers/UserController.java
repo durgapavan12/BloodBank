@@ -67,7 +67,7 @@ public class UserController {
 	@PreAuthorize("hasPermission('null','viewUser')")
 	@RequestMapping(value = "/secure/profile", method = RequestMethod.GET)
 	public Registration viewProfile(long phNo) {
-		Registration profile = new Registration();
+		Registration profile =null;
 		try {
 			profile = accountService.getProfile(phNo);
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ public class UserController {
 
 	
 	@PreAuthorize("hasPermission('null','viewUserTransaction')")
-	@RequestMapping(value = "/secure/transactions", method = RequestMethod.POST)
+	@RequestMapping(value = "/secure/transactions", method = RequestMethod.GET)
 	public ArrayList<Transaction> viewTransactions(long phNo) throws BloodBankException {
 		ArrayList<Transaction> list = new ArrayList<Transaction>();
 		try {
@@ -89,7 +89,7 @@ public class UserController {
 		return list;
 	}
 
-	@PreAuthorize("hasPermission('null','updateProfile')")
+	@PreAuthorize("hasPermission('null','updatePassword')")
 	@RequestMapping(value="/secure/change",method = RequestMethod.POST)
 	public Response changePassword(String password,String oldPassword,long id) throws BloodBankException {
 	Response response=new Response();
@@ -101,7 +101,8 @@ public class UserController {
 	return response;
 	}
 
-	@RequestMapping(value = "/edit", method = RequestMethod.POST, headers = "Accept=application/json")
+	@PreAuthorize("hasPermission('null','updateProfile')")
+	@RequestMapping(value = "/secure/edit", method = RequestMethod.POST, headers = "Accept=application/json")
 	public Response editProfile(@RequestBody Registration updation, long id) {
 		Response response = new Response();
 		try {

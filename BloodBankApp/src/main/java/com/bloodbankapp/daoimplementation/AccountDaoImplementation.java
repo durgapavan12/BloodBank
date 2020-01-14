@@ -58,9 +58,8 @@ public class AccountDaoImplementation implements AccountDao {
 	public Login loginCheck(Login login) {
 
 		Response response = new Response();
-		Login user = new Jongo(DB_Constants.getMongodbDatabase())
-				.getCollection(DB_Constants.getRegistrationCol()).findOne("{phNo:#}", login.getPhNo())
-				.as(Login.class);
+		Login user = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol())
+				.findOne("{phNo:#}", login.getPhNo()).as(Login.class);
 		if (user != null) {
 			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
 			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
@@ -90,9 +89,12 @@ public class AccountDaoImplementation implements AccountDao {
 				int n = bg.getQuantity() + bloodGroup.getQuantity();
 				bg.setQuantity(n);
 				int flag = 0;
-				if (bloodGroup.getAmount() != bg.getAmount()) {
+				if (bloodGroup.getAmount() != bg.getAmount()&&bloodGroup.getAmount()>0) {
 					bg.setAmount(bloodGroup.getAmount());
 					response.setStatusMessage("amount changed!");
+					if (bloodGroup.getQuantity()>0) {
+						response.setStatusMessage("amount changed and quantity increased!");
+					}
 					flag = 1;
 				}
 				new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getBloodgroupCol())
@@ -163,10 +165,10 @@ public class AccountDaoImplementation implements AccountDao {
 			if (bg != null) {
 				if (bg.getQuantity() > bloodGroup.getQuantity()) {
 					response.setStatusCode(ResponseConstants.Success_code);
-					response.setStatusMessage("Blood Group availble");
+					response.setStatusMessage("Blood Group availble and cost around "+bg.getAmount()*bloodGroup.getQuantity()+"/- for your required quantity");
 				} else {
 					response.setStatusCode(ResponseConstants.Success_code);
-					response.setStatusMessage("Only " + bg.getQuantity() + " units is available");
+					response.setStatusMessage("Only " + bg.getQuantity() + " units is available and costs around "+bg.getQuantity()*bg.getAmount()+"/-for available quantity ");
 				}
 			} else {
 				response.setStatusCode(ResponseConstants.Error_code);
@@ -252,8 +254,13 @@ public class AccountDaoImplementation implements AccountDao {
 				.findOne("{bloodGroup:#}", transaction.getBloodGroup()).as(BloodGroup.class);
 
 		if (bg != null) {
+			if (transaction.getStatus().equalsIgnoreCase("donated")) {
 			int n = bg.getQuantity() + transaction.getQuantity();
-			bg.setQuantity(n);
+			bg.setQuantity(n);}
+			if (transaction.getStatus().equalsIgnoreCase("recieved")) {
+				int n=bg.getQuantity()-transaction.getQuantity();
+				bg.setQuantity(n);
+			}
 			new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getBloodgroupCol())
 					.update("{bloodGroup:#}", transaction.getBloodGroup()).upsert().with(bg);
 			response.setStatusCode(ResponseConstants.Success_code);
@@ -302,7 +309,7 @@ public class AccountDaoImplementation implements AccountDao {
 		Response response = new Response();
 		Registration dbprofile = new Jongo(DB_Constants.getMongodbDatabase())
 				.getCollection(DB_Constants.getRegistrationCol()).findOne("{id:#}", id).as(Registration.class);
-		if (dbprofile!=null&&oldPassword.equals(dbprofile.getPassword())) {
+		if (dbprofile != null && oldPassword.equals(dbprofile.getPassword())) {
 			dbprofile.setPassword(newPassword);
 			new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol())
 					.update("{id:#}", id).upsert().with(dbprofile);
@@ -312,27 +319,28 @@ public class AccountDaoImplementation implements AccountDao {
 			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("failed to update password");
 		}
-				return response;
+		return response;
 	}
 
 	@Override
-	 public List<Role> getAllRoles() throws BloodBankException  {
+	public List<Role> getAllRoles() throws BloodBankException {
 		Iterator<Role> itr = null;
 		List<Role> listOfRoles = new ArrayList<Role>();
 		try {
-		itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles").aggregate("{$match:{}}").as(Role.class)        //"rolesDetails"
-		.iterator();
-		while (itr.hasNext()) {
-		Role role = new Role();
-		role=itr.next();
-		listOfRoles.add(role);
+			itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles").aggregate("{$match:{}}")
+					.as(Role.class) // "rolesDetails"
+					.iterator();
+			while (itr.hasNext()) {
+				Role role = new Role();
+				role = itr.next();
+				listOfRoles.add(role);
 
-		}
+			}
 		} catch (Exception e) {
-		throw new BloodBankException("Exception Occure Wille Feacthing The All Roles ", e);
+			throw new BloodBankException("Exception Occure Wille Feacthing The All Roles ", e);
 		}
 		return listOfRoles;
-		}
+	}
 
 	@Override
 	public UserPermissions getAdminAndUserRoles(int i) throws BloodBankException {
@@ -340,14 +348,15 @@ public class AccountDaoImplementation implements AccountDao {
 		Iterator<UserPermissions> itr = null;
 		UserPermissions userPermissions = new UserPermissions();
 		try {
-		itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles").aggregate("{$match:{roleId:#}}", i)
-		.and("{$group:{_id:null,permissionList: { $first: '$permissions'},roleIdList: { $push: '$roleId' }}}")
-		.as(UserPermissions.class).iterator();
-		if (itr.hasNext()) {
-		userPermissions = itr.next();
-		}
+			itr = new Jongo(DB_Constants.getMongodbDatabase()).getCollection("roles")
+					.aggregate("{$match:{roleId:#}}", i)
+					.and("{$group:{_id:null,permissionList: { $first: '$permissions'},roleIdList: { $push: '$roleId' }}}")
+					.as(UserPermissions.class).iterator();
+			if (itr.hasNext()) {
+				userPermissions = itr.next();
+			}
 		} catch (Exception e) {
-		throw new BloodBankException("Exception Occure Wille Fetching The All Roles",e);
+			throw new BloodBankException("Exception Occure Wille Fetching The All Roles", e);
 		}
 		return userPermissions;
 	}
@@ -355,9 +364,8 @@ public class AccountDaoImplementation implements AccountDao {
 	@Override
 	public Login checkAdmin(Login login) {
 		Response response = new Response();
-		Login user = new Jongo(DB_Constants.getMongodbDatabase())
-				.getCollection(DB_Constants.getAdminCol()).findOne("{userPhno:#}", login.getPhNo())
-				.as(Login.class);
+		Login user = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getAdminCol())
+				.findOne("{phNo:#}", login.getPhNo()).as(Login.class);
 		if (user != null) {
 			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
 			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
@@ -374,9 +382,6 @@ public class AccountDaoImplementation implements AccountDao {
 		}
 		return user;
 
-	
 	}
-	
-	
 
 }
