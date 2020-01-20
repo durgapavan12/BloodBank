@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.bloodbankapp.constants.ResponseConstants;
 import com.bloodbankapp.dao.AccountDao;
+import com.bloodbankapp.dao.UserDao;
 import com.bloodbankapp.exception.BloodBankException;
 import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
@@ -24,19 +25,22 @@ import com.bloodbankapp.security.vo.JwtUser;
 public class UserService {
 
 	@Autowired
-	AccountDao accountDao;
+	UserDao	userDao;
 
+	@Autowired
+	AccountDao accountDao;
+	
 	@Autowired
 	private JwtValidator jwtvalidator;
 
-	public Response registrationUser(Registration registration) {
-		return accountDao.registration(registration);
+	public Response registrationUser(Registration registration) throws BloodBankException{
+		return userDao.registration(registration);
 	}
 
-	public Response checkLogin(Login login) throws BloodBankException {
+	public Response checkLogin(Login login) throws BloodBankException{
 
 		Response resp = new Response();
-		Login user = accountDao.loginCheck(login);
+		Login user = userDao.loginCheck(login);
 		if (user.getStatusCode()==200) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
 			Set<String> permissionSet = new HashSet<String>();
@@ -64,19 +68,19 @@ public class UserService {
 	}
 	
 	public Response checkBloodDetails(BloodGroup bloodGroup) throws BloodBankException{
-		return accountDao.bloodChecking(bloodGroup);
+		return userDao.bloodChecking(bloodGroup);
 	}
 	
-	public Registration getProfile(long phNo) {
-		return accountDao.viewProfile(phNo);
+	public Registration getProfile(long phNo) throws BloodBankException{
+		return userDao.viewProfile(phNo);
 	}
 
-	public Response editProfile(Registration updation, long id) {
-		return accountDao.profileEdit(updation, id);
+	public Response editProfile(Registration updation, long id) throws BloodBankException{
+		return userDao.profileEdit(updation, id);
 	}
 
-	public Response changePassword(String newPassword, String oldPassword, long phNo) {
-		return accountDao.changePassword(newPassword, oldPassword, phNo);
+	public Response changePassword(String newPassword, String oldPassword, long phNo) throws BloodBankException{
+		return userDao.changePassword(newPassword, oldPassword, phNo);
 	}
 
 	public List<Role> getAllRoles() throws BloodBankException {

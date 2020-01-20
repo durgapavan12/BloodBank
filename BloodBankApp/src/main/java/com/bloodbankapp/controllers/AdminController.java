@@ -30,7 +30,6 @@ public class AdminController {
 	@Autowired
 	AccountService accountService;
 	
-	
 	private static final Logger logger  = Logger.getLogger(AdminController.class);
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.bloodbankapp.constants.ResponseConstants;
 import com.bloodbankapp.dao.AccountDao;
+import com.bloodbankapp.dao.AdminDao;
 import com.bloodbankapp.exception.BloodBankException;
 import com.bloodbankapp.pojos.BloodGroup;
 import com.bloodbankapp.pojos.Login;
@@ -22,22 +23,17 @@ import com.bloodbankapp.security.vo.JwtUser;
 public class AdminService {
 
 	@Autowired
+	AdminDao adminDao;
+	
+	@Autowired
 	AccountDao accountDao;
 	
 	@Autowired
 	private JwtValidator jwtvalidator;
 	
-	@SuppressWarnings("unused")
 	public Response checkAdminLogin(Login login) throws BloodBankException {
-		Response resp = new Response();
-		Long num=login.getPhNo();
-		if (num==null&&login.getPassword()!=null&&login.getPassword()=="") {
-			resp.setStatusCode(ResponseConstants.Error_code);
-			resp.setStatusMessage("credentials are not in valid format or empty");
-			return resp;
-		}
-			
-		Login user = accountDao.checkAdmin(login);
+		Response resp = new Response();			
+		Login user = adminDao.checkAdmin(login);
 		if (user.getStatusCode()==200) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(1);
 			Set<String> permissionSet = new HashSet<String>();
@@ -65,17 +61,17 @@ public class AdminService {
 	}
 	
 	
-	public Response insertBloodGroupData(BloodGroup bloodGroup) {
-		return accountDao.insertBGData(bloodGroup);
+	public Response insertBloodGroupData(BloodGroup bloodGroup) throws BloodBankException{
+		return adminDao.insertBGData(bloodGroup);
 	}
 	
 	
-	public Response updateQuantity(Transaction transaction) {
-		return accountDao.updateQuantity(transaction);
+	public Response updateQuantity(Transaction transaction) throws BloodBankException{
+		return adminDao.updateQuantity(transaction);
 	}
 	
-	public Response removeUser(long phNo) {
-		return accountDao.deleteUser(phNo);
+	public Response removeUser(long phNo) throws BloodBankException{
+		return adminDao.deleteUser(phNo);
 	}
 
 	
