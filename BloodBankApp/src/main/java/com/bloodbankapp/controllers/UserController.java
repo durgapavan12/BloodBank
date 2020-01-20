@@ -2,6 +2,7 @@ package com.bloodbankapp.controllers;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,39 +17,45 @@ import com.bloodbankapp.pojos.Login;
 import com.bloodbankapp.pojos.Registration;
 import com.bloodbankapp.pojos.Response;
 import com.bloodbankapp.pojos.Transaction;
-import com.bloodbankapp.services.AccountServices;
+import com.bloodbankapp.services.AccountService;
+import com.bloodbankapp.services.UserService;
 
 @RestController
 @RequestMapping("/account")
 public class UserController {
+	
+	private static final Logger logger  = Logger.getLogger(UserController.class);
 
 	@Autowired
-	private AccountServices accountService;
+	private UserService userService;
+	
+	@Autowired
+	private AccountService accountService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response registrationNewUser(@RequestBody Registration registration) throws BloodBankException {
+	public Response registrationNewUser(@RequestBody Registration registration) {
 		Response response = new Response();
 		try {
-			response = accountService.registrationUser(registration);
+			response = userService.registrationUser(registration);
 		} catch (Exception e) {
-			throw new BloodBankException("Exception occured while Registration");
+			logger.error("Exception occured while Registration", e);
 		}
 		return response;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response login(@RequestBody Login login) throws BloodBankException {
+	public Response login(@RequestBody Login login) {
 		Response response = new Login();
 		try {
-			response = accountService.checkLogin(login);
+			response = userService.checkLogin(login);
 		} catch (Exception e) {
-			throw new BloodBankException("Exception occured in checking blood ");
+			logger.error("Exception occured in checking blood ",e);
 		}
 		return response;
 	}
 
-	@RequestMapping(value = "/check", method = RequestMethod.POST, headers = "Accept=application/json")
-	public Response bloodCheck(@RequestBody BloodGroup bloodGroup) throws BloodBankException {
+	@RequestMapping(value = "/check", method = RequestMethod.GET, headers = "Accept=application/json")
+	public Response bloodCheck(@RequestBody BloodGroup bloodGroup) {
 		Response response = new Response();
 		try {
 			if (bloodGroup.getQuantity() <= 0) {
@@ -56,9 +63,12 @@ public class UserController {
 				response.setStatusMessage("Enter a valid number");
 				return response;
 			}
-			response = accountService.checkBloodDetails(bloodGroup);
+			response = userService.checkBloodDetails(bloodGroup);
 		} catch (Exception e) {
-			throw new BloodBankException("Exception occured while checking blood details");
+			
+			logger.error("Error in blood checking detail",e);
+			response.setStatusCode(ResponseConstants.Error_code);
+			response.setStatusMessage("Error while checking blood details");
 		}
 		return response;
 	}
@@ -69,9 +79,10 @@ public class UserController {
 	public Registration viewProfile(long phNo) {
 		Registration profile =null;
 		try {
-			profile = accountService.getProfile(phNo);
+			profile = userService.getProfile(phNo);
 		} catch (Exception e) {
-			new BloodBankException("Exception occured while fetching profile");
+			//new BloodBankException("Exception occurred while fetching profile");
+			logger.error("Exception occured while fetching profile",e);
 		}
 		return profile;
 	}
@@ -79,24 +90,27 @@ public class UserController {
 	
 	@PreAuthorize("hasPermission('null','viewUserTransaction')")
 	@RequestMapping(value = "/secure/transactions", method = RequestMethod.GET)
-	public ArrayList<Transaction> viewTransactions(long phNo) throws BloodBankException {
+	public ArrayList<Transaction> viewTransactions(long phNo) {
 		ArrayList<Transaction> list = new ArrayList<Transaction>();
 		try {
 			list = accountService.getTransactions(phNo);
 		} catch (Exception e) {
-			throw new BloodBankException("Exception occured while fetching user transactions");
+			//throw new BloodBankException("Exception occurred while fetching user transactions");
+			
+			logger.error("Exception occurred while fetching user transactions",e);
 		}
 		return list;
 	}
 
 	@PreAuthorize("hasPermission('null','updatePassword')")
 	@RequestMapping(value="/secure/change",method = RequestMethod.POST)
-	public Response changePassword(String password,String oldPassword,long id) throws BloodBankException {
+	public Response changePassword(String newPassword,String oldPassword,long phNo) throws BloodBankException {
 	Response response=new Response();
 	try {
-	response=accountService.changePassword(password,oldPassword,id);
+	response=userService.changePassword(newPassword,oldPassword,phNo);
 	}catch (Exception e) {
-		throw new BloodBankException("Exception occured while changing password");
+		//throw new BloodBankException("Exception occurred while changing password");
+		logger.error("Exception occurred while changing password",e);
 	}
 	return response;
 	}
@@ -106,10 +120,11 @@ public class UserController {
 	public Response editProfile(@RequestBody Registration updation, long id) {
 		Response response = new Response();
 		try {
-			response = accountService.editProfile(updation, id);
+			response = userService.editProfile(updation, id);
 
 		} catch (Exception e) {
-			new BloodBankException("Exception occured while editing profile");
+			//new BloodBankException("Exception occurred while editing profile");
+			logger.error("Exception occurred while editing profile",e);
 		}
 		return response;
 	}

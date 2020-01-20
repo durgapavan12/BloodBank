@@ -2,7 +2,7 @@ package com.bloodbankapp.pojos;
 
 public class Login extends Response{
 	
-	private int userId;
+	private int id;
 	
 	private long phNo;
 	private String password;
@@ -17,10 +17,10 @@ public class Login extends Response{
 		this.sessionToken = sessionToken;
 	}
 	public int getUserId() {
-		return userId;
+		return id;
 	}
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUserId(int id) {
+		this.id = id;
 	}
 	
 	public long getPhNo() {

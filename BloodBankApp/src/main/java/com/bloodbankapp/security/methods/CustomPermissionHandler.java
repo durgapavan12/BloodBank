@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 
 import com.bloodbankapp.pojos.Role;
 import com.bloodbankapp.security.vo.JwtUserDetails;
-import com.bloodbankapp.services.AccountServices;
+import com.bloodbankapp.services.UserService;
 
 @Component
 public class CustomPermissionHandler implements PermissionEvaluator {
 
 	@Autowired
-	private AccountServices accountService;
+	private UserService accountService;
 	private static Map<Integer, ArrayList<String>> permissionMap = null;
 
 	@Override

@@ -20,7 +20,7 @@ public interface AccountDao {
 	Response insertBGData(BloodGroup bloodGroup);
 	Response insertTransaction(Transaction transaction);
 	List<Transaction> fetchTransaction();
-	Response bloodChecking(BloodGroup bloodGroup);
+	Response bloodChecking(BloodGroup bloodGroup) throws BloodBankException;
 	ArrayList<BloodGroup> bloodAvailableDetails();
 	Registration viewProfile(long phNo);
 	Response deleteUser(long phNo);

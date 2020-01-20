@@ -27,6 +27,8 @@ import ch.qos.logback.classic.Logger;
 @Repository("accountDao")
 public class AccountDaoImplementation implements AccountDao {
 
+	
+	//------------------For user registration----------------
 	@Override
 	public Response registration(Registration registration) {
 
@@ -54,29 +56,31 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	//-----------------------User Logging Check------------------------
 	@Override
 	public Login loginCheck(Login login) {
 
-		Response response = new Response();
 		Login user = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol())
 				.findOne("{phNo:#}", login.getPhNo()).as(Login.class);
 		if (user != null) {
 			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
 			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
 			if (b) {
-				response.setStatusCode(ResponseConstants.Success_code);
-				response.setStatusMessage("Successfully logged in!");
+				user.setStatusCode(ResponseConstants.Success_code);
+				user.setStatusMessage("Successfully logged in!");
 			} else {
-				response.setStatusCode(ResponseConstants.Error_code);
-				response.setStatusMessage("Error while logging ");
+				user.setStatusCode(ResponseConstants.Error_code);
+				user.setStatusMessage("Error while logging ");
 			}
 		} else {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("User Not found");
+			user.setStatusCode(ResponseConstants.Error_code);
+			user.setStatusMessage("User Not found");
 		}
 		return user;
 	}
-
+	
+	
+	//----------------------For admin to change cost and quantity----------------
 	@Override
 	public Response insertBGData(BloodGroup bloodGroup) {
 
@@ -117,6 +121,7 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	//-----------------for insertion of transaction-------------------
 	@Override
 	public Response insertTransaction(Transaction transaction) {
 		Response response = new Response();
@@ -143,6 +148,7 @@ public class AccountDaoImplementation implements AccountDao {
 
 	}
 
+	//-----------------to get all the transactions-------------------
 	@Override
 	public List<Transaction> fetchTransaction() {
 
@@ -155,9 +161,11 @@ public class AccountDaoImplementation implements AccountDao {
 		}
 		return list;
 	}
-
+	
+	
+	//-----------------for user blood checking service--------------
 	@Override
-	public Response bloodChecking(BloodGroup bloodGroup) {
+	public Response bloodChecking(BloodGroup bloodGroup) throws BloodBankException {
 		Response response = new Response();
 		try {
 			BloodGroup bg = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getBloodgroupCol())
@@ -168,20 +176,20 @@ public class AccountDaoImplementation implements AccountDao {
 					response.setStatusMessage("Blood Group availble and cost around "+bg.getAmount()*bloodGroup.getQuantity()+"/- for your required quantity");
 				} else {
 					response.setStatusCode(ResponseConstants.Success_code);
-					response.setStatusMessage("Only " + bg.getQuantity() + " units is available and costs around "+bg.getQuantity()*bg.getAmount()+"/-for available quantity ");
+					response.setStatusMessage("Only " + bg.getQuantity() + " units is available and costs around "+bg.getQuantity()*bg.getAmount()+" /-for available quantity ");
 				}
 			} else {
 				response.setStatusCode(ResponseConstants.Error_code);
 				response.setStatusMessage("Failed to fetch blood details as blood group is not available");
 			}
 		} catch (Exception e) {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("Error while checking blood details");
+			throw new BloodBankException("",e);
 		}
 
 		return response;
 	}
 
+	//---------------for admin to see all the blood groups & quantity in bank-----------
 	@Override
 	public ArrayList<BloodGroup> bloodAvailableDetails() {
 
@@ -196,6 +204,7 @@ public class AccountDaoImplementation implements AccountDao {
 		return list;
 	}
 
+	//---------------for user to view his profile------------------
 	@Override
 	public Registration viewProfile(long phNo) {
 		Iterator<Registration> itr = null;
@@ -213,6 +222,7 @@ public class AccountDaoImplementation implements AccountDao {
 		return registration;
 	}
 
+	//----------------for admin to delete particular user-----------
 	@Override
 	public Response deleteUser(long phNo) {
 
@@ -227,11 +237,12 @@ public class AccountDaoImplementation implements AccountDao {
 			response.setStatusMessage("Deleted!");
 		} else {
 			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("failed to delete!");
+			response.setStatusMessage("No user to delete!");
 		}
 		return response;
 	}
 
+	//---------------for admin to get all the transactions--------------
 	@Override
 	public ArrayList<Transaction> transactionList(long phNo) {
 
@@ -246,6 +257,8 @@ public class AccountDaoImplementation implements AccountDao {
 		return list;
 	}
 
+	
+	//------------updating blood qty and transactions while donate/receive--------
 	@Override
 	public Response updateQuantity(Transaction transaction) {
 
@@ -254,18 +267,27 @@ public class AccountDaoImplementation implements AccountDao {
 				.findOne("{bloodGroup:#}", transaction.getBloodGroup()).as(BloodGroup.class);
 
 		if (bg != null) {
+			int out=0;
 			if (transaction.getStatus().equalsIgnoreCase("donated")) {
 			int n = bg.getQuantity() + transaction.getQuantity();
 			bg.setQuantity(n);}
 			if (transaction.getStatus().equalsIgnoreCase("recieved")) {
 				int n=bg.getQuantity()-transaction.getQuantity();
+				
+				if(n<0) {
+					response.setStatusCode(ResponseConstants.Error_code);
+					response.setStatusMessage("Out of stock!");
+					out=1;
+				}else
 				bg.setQuantity(n);
 			}
 			new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getBloodgroupCol())
 					.update("{bloodGroup:#}", transaction.getBloodGroup()).upsert().with(bg);
-			response.setStatusCode(ResponseConstants.Success_code);
-			response.setStatusMessage("blood quantity updated");
 			insertTransaction(transaction);
+			if(out==0) {
+			response.setStatusCode(ResponseConstants.Success_code);
+			response.setStatusMessage("Transactions and quantity updated");
+			}
 		} else {
 			response.setStatusCode(ResponseConstants.Error_code);
 			response.setStatusMessage("failed to update blood quantity");
@@ -274,6 +296,8 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	
+	//---------------for user to edit their profile------------
 	@Override
 	public Response profileEdit(Registration updation, long id) {
 		Response response = new Response();
@@ -303,16 +327,17 @@ public class AccountDaoImplementation implements AccountDao {
 		return response;
 	}
 
+	// -------------------for user to change their password------------
 	@Override
-	public Response changePassword(String newPassword, String oldPassword, long id) {
+	public Response changePassword(String newPassword, String oldPassword, long phNo) {
 
 		Response response = new Response();
 		Registration dbprofile = new Jongo(DB_Constants.getMongodbDatabase())
-				.getCollection(DB_Constants.getRegistrationCol()).findOne("{id:#}", id).as(Registration.class);
+				.getCollection(DB_Constants.getRegistrationCol()).findOne("{id:#}", phNo).as(Registration.class);
 		if (dbprofile != null && oldPassword.equals(dbprofile.getPassword())) {
 			dbprofile.setPassword(newPassword);
 			new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getRegistrationCol())
-					.update("{id:#}", id).upsert().with(dbprofile);
+					.update("{phNo:#}", phNo).upsert().with(dbprofile);
 			response.setStatusCode(ResponseConstants.Success_code);
 			response.setStatusMessage("password updated successfully");
 		} else {
@@ -321,6 +346,7 @@ public class AccountDaoImplementation implements AccountDao {
 		}
 		return response;
 	}
+
 
 	@Override
 	public List<Role> getAllRoles() throws BloodBankException {
@@ -363,22 +389,21 @@ public class AccountDaoImplementation implements AccountDao {
 
 	@Override
 	public Login checkAdmin(Login login) {
-		Response response = new Response();
 		Login user = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getAdminCol())
 				.findOne("{phNo:#}", login.getPhNo()).as(Login.class);
 		if (user != null) {
 			String generatedlogedPasswordHash = BCrypt.hashpw(login.getPassword(), BCrypt.gensalt(12));
 			boolean b = BCrypt.checkpw(user.getPassword(), generatedlogedPasswordHash);
 			if (b) {
-				response.setStatusCode(ResponseConstants.Success_code);
-				response.setStatusMessage("Successfully logged in!");
+				user.setStatusCode(ResponseConstants.Success_code);
+				user.setStatusMessage("Successfully logged in!");
 			} else {
-				response.setStatusCode(ResponseConstants.Error_code);
-				response.setStatusMessage("Error while logging ");
+				user.setStatusCode(ResponseConstants.Error_code);
+				user.setStatusMessage("Error while logging ");
 			}
 		} else {
-			response.setStatusCode(ResponseConstants.Error_code);
-			response.setStatusMessage("User Not found");
+			user.setStatusCode(ResponseConstants.Error_code);
+			user.setStatusMessage("User Not found");
 		}
 		return user;
 
