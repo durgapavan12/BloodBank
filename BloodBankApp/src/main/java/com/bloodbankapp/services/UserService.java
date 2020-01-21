@@ -39,7 +39,6 @@ public class UserService {
 
 	public Response checkLogin(Login login) throws BloodBankException{
 
-		Response resp = new Response();
 		Login user = userDao.loginCheck(login);
 		if (user.getStatusCode()==200) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(2);
@@ -58,13 +57,8 @@ public class UserService {
 			user.setSessionToken(sessionToken);
 			user.setStatusCode(ResponseConstants.Success_code);
 			user.setStatusMessage("successfully login");
-			return user;
-		} else {
-			resp.setStatusCode(ResponseConstants.Error_code);
-			resp.setStatusMessage("login failed");
-			return resp;
-		}
-
+		} 
+		return user;
 	}
 	
 	public Response checkBloodDetails(BloodGroup bloodGroup) throws BloodBankException{

@@ -2,6 +2,7 @@ package com.bloodbankapp.pojos;
 
 public class Login extends Response{
 	
+
 	private int id;
 	
 	private long phNo;

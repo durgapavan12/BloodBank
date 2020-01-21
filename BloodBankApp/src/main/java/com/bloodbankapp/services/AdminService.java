@@ -32,7 +32,6 @@ public class AdminService {
 	private JwtValidator jwtvalidator;
 	
 	public Response checkAdminLogin(Login login) throws BloodBankException {
-		Response resp = new Response();			
 		Login user = adminDao.checkAdmin(login);
 		if (user.getStatusCode()==200) {
 			UserPermissions userPermissions = accountDao.getAdminAndUserRoles(1);
@@ -51,13 +50,8 @@ public class AdminService {
 			user.setSessionToken(sessionToken);
 			user.setStatusCode(ResponseConstants.Success_code);
 			user.setStatusMessage("successfully login");
-			return user;
-		} else {
-			resp.setStatusCode(ResponseConstants.Error_code);
-			resp.setStatusMessage("login failed");
-			return resp;
-		}
-
+		} 
+		return user;
 	}
 	
 	

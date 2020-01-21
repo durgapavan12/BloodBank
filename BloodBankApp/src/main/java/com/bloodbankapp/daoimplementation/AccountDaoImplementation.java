@@ -56,9 +56,6 @@ public class AccountDaoImplementation implements AccountDao {
 			
 		}
 	}
-
-
-
 	
 	//-------------------for user to get his transactions--------------
 	@Override
@@ -66,7 +63,6 @@ public class AccountDaoImplementation implements AccountDao {
 		ArrayList<Transaction> list = new ArrayList<Transaction>();
 		if(phNo!=0) {
 		try {
-	
 
 		Iterator iterator = new Jongo(DB_Constants.getMongodbDatabase()).getCollection(DB_Constants.getTransactionCol())
 				.find("{phNo:#}", phNo).as(Transaction.class).iterator();
