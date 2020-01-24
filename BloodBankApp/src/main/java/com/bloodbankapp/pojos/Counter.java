@@ -1,16 +1,16 @@
 package com.bloodbankapp.pojos;
 
 public class Counter {
-	String _id;
+	//String _id;
 	int seq;
 
-	public String get_id() {
-		return _id;
-	}
-
-	public void set_id(String _id) {
-		this._id = _id;
-	}
+//	public String get_id() {
+//		return _id;
+//	}
+//
+//	public void set_id(String _id) {
+//		this._id = _id;
+//	}
 
 	public int getSeq() {
 		return seq;

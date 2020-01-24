@@ -2,6 +2,8 @@ package com.bloodbankapp.daoimplementation;
 
 import java.util.Iterator;
 
+import javax.validation.constraints.Size;
+
 import org.apache.log4j.Logger;
 import org.jongo.Jongo;
 import org.mindrot.jbcrypt.BCrypt;
@@ -158,6 +160,8 @@ public class UserDaoImplementation implements UserDao {
 				if (itr.hasNext()) {
 					registration = itr.next();
 				}
+				registration.setStatusCode(ResponseConstants.Success_code);
+				
 
 			} catch (Exception e) {
 				throw new BloodBankException("Exception occurred while fetching profile", e);
