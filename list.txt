@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Red",
+    "code": "#FF3E4D"
+  },
+  {
+    "name": "Black",
+    "code": "#2C3335"
+  },
+  {
+    "name": "Yellow",
+    "code": "#FFF222"
+  },
+  {
+    "name": "Pink",
+    "code": "#E74292"
+  },
+  {
+    "name": "Blue",
+    "code": "#74B9FF"
+  }
+]
